@@ -14,28 +14,25 @@ public class VoxelmetricExample : MonoBehaviour
     public PathFinder pf;
 
     SaveProgress saveProgress;
+	public float maxDistance = 3;
 
     public void SetType(string newType){
         blockToPlace = newType;
     }
 
+	void Start(){
+		Cursor.visible = false;
+	}
+
     void Update()
     {
-        if (Input.GetMouseButton(1))
-        {
-            rot = new Vector2(
-                rot.x + Input.GetAxis("Mouse X") * 3,
-                rot.y + Input.GetAxis("Mouse Y") * 3);
 
-            transform.localRotation = Quaternion.AngleAxis(rot.x, Vector3.up);
-            transform.localRotation *= Quaternion.AngleAxis(rot.y, Vector3.left);
-        }
-        transform.position += transform.forward * 50 * Input.GetAxis("Vertical") * Time.deltaTime;
-        transform.position += transform.right * 50 * Input.GetAxis("Horizontal") * Time.deltaTime;
-
+		if(Input.GetKeyDown (KeyCode.Alpha1))
+			SetType ("air");
+		if(Input.GetKeyDown(KeyCode.Alpha2))
+			SetType("stone");
         RaycastHit hit;
         var mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
-
         if (Input.GetMouseButtonDown(0))
         {
 
@@ -45,13 +42,13 @@ public class VoxelmetricExample : MonoBehaviour
                 adjacent = false;
             }
 
-            if (Physics.Raycast(Camera.main.transform.position, mousePos - Camera.main.transform.position, out hit, 100))
+			if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, maxDistance))
             {
                 Voxelmetric.SetBlock(hit, blockToPlace, adjacent);
             }
         }
 
-        if (Physics.Raycast(Camera.main.transform.position, mousePos - Camera.main.transform.position, out hit, 100))
+		if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, maxDistance))
         {
             selectedBlockText.text = Voxelmetric.GetBlock(hit).ToString();
         }
